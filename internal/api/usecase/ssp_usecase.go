@@ -12,8 +12,8 @@ import (
 )
 
 func SspExec(condition request.SspRequest) response.SspResponse {
-	dspEndpoints := []string{"http://localhost:8080/dsp1",
-		"http://localhost:8080/dsp2", "http://localhost:8080/dsp3"}
+	dspEndpoints := []string{"http://localhost:7070/dsp/1",
+		"http://localhost:7070/dsp/2", "http://localhost:7070/dsp/3"}
 
 	results := make([]response.DspResponse, len(dspEndpoints))
 

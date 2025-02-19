@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"log"
 	"net/http"
 	"test_project/internal/api/request"
 	"test_project/internal/api/response"
@@ -11,13 +12,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type Dsp3Handler struct {
+type DspHandler struct {
 	Usecase *usecase.DspUsecase
 }
 
 // Gets AdCondition, responses with adSpecs to SSP
-func (u *Dsp3Handler) Dsp3(c *gin.Context) {
-	time.Sleep(50 * time.Millisecond)
+func (u *DspHandler) Dsp(c *gin.Context) {
+	time.Sleep(5 * time.Millisecond)
 
 	var AdCondition request.DspRequest
 
@@ -25,9 +26,9 @@ func (u *Dsp3Handler) Dsp3(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	result, err := u.Usecase.Exec(entities.Ad{
+	result, price, err := u.Usecase.Exec(entities.Ad{
 		AdCondition: AdCondition.AdCondition,
-		DspID:       "3",
+		DspID:       c.Param("id"),
 	})
 
 	if err != nil {
@@ -39,7 +40,8 @@ func (u *Dsp3Handler) Dsp3(c *gin.Context) {
 		DspID:       result.DspID,
 		AdName:      result.AdName,
 		AdCondition: result.AdCondition,
-		Price:       500,
+		Price:       price,
 	}
+	log.Println("DSP: "+c.Param("id")+" Price: ", price)
 	c.JSON(http.StatusOK, DspResponse)
 }

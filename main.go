@@ -1,8 +1,8 @@
-package main
+package cmd
 
 import (
 	"log"
-	"test_project/internal/api"
+	"test_project/cmd"
 	"test_project/internal/repository"
 	"test_project/internal/utils"
 	"test_project/pkg"
@@ -20,6 +20,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error initializing database: %v", err)
 	}
+	cmd.SetDBConn(db)
 	defer db.Close()
 	log.Println("Database initialized successfully")
 	// Add test ads into database
@@ -27,9 +28,8 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error adding test ads into dsp database: %v", err)
 	}
-	// Start Server
-	err = api.StartServer(envList.ServerHost, envList.ServerPort, db)
-	if err != nil {
-		log.Fatalf("Error starting server: %v", err)
-	}
+
+	// Start app
+	cmd.Execute()
+
 }
