@@ -15,11 +15,11 @@ func StartDSP(DSPHost, DSPPort string, db *sql.DB) error {
 	//Initialize usecases
 	dspUsecase := &usecase.DspUsecase{Repo: repo}
 	//Initialize handlers
-	dsp1Handler := &handler.DspHandler{Usecase: dspUsecase}
+	dspHandler := &handler.DspHandler{Usecase: dspUsecase}
 
 	r := gin.Default()
 	//DSP handlers
-	r.POST("/dsp/:id", dsp1Handler.Dsp)
+	r.POST("/dsp/:id", dspHandler.Dsp)
 
 	if err := r.Run(DSPHost + ":" + DSPPort); err != nil {
 		return err
