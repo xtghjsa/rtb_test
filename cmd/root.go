@@ -17,7 +17,6 @@ var rootCmd = &cobra.Command{
 		fmt.Println("Starting RTB Test Application, type exit to stop the application")
 		reader := bufio.NewReader(os.Stdin)
 		for {
-			fmt.Print("> ")
 			input, _ := reader.ReadString('\n')
 			input = strings.TrimSpace(input)
 			if input == "exit" {

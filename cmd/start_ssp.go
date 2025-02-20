@@ -2,28 +2,32 @@ package cmd
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"test_project/internal/api"
+	"test_project/internal/utils"
 
 	"github.com/spf13/cobra"
 )
+
+func startSSPExec(cmd *cobra.Command, args []string) {
+	envList, err := utils.LoadEnv()
+	if err != nil {
+		log.Fatalf("error loading env variables: %v\n", err)
+	}
+
+	err = api.StartSSP(envList.SSPHost, envList.SSPPort)
+	if err != nil {
+		fmt.Printf("Error starting SSP server: %v\n", err)
+		os.Exit(1)
+	}
+}
 
 var startSSPCmd = &cobra.Command{
 	Use:   "startssp",
 	Short: "Start SSP server",
 	Long:  "Start SSP server",
-	Run: func(cmd *cobra.Command, args []string) {
-		// Read host and port from environment variables, with defaults if not set
-		host := os.Getenv("SSP_HOST")
-		port := os.Getenv("SSP_PORT")
-
-		fmt.Printf("Starting SSP server at %s:%s\n", host, port)
-		err := api.StartSSP(host, port)
-		if err != nil {
-			fmt.Printf("Error starting SSP server: %v\n", err)
-			os.Exit(1)
-		}
-	},
+	Run:   startSSPExec,
 }
 
 func init() {

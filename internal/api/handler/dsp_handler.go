@@ -18,16 +18,15 @@ type DspHandler struct {
 
 // Gets AdCondition, responses with adSpecs to SSP
 func (u *DspHandler) Dsp(c *gin.Context) {
-	time.Sleep(5 * time.Millisecond)
 
-	var AdCondition request.DspRequest
+	var conditions request.DspRequest
 
-	if err := c.ShouldBindJSON(&AdCondition); err != nil {
+	if err := c.ShouldBindJSON(&conditions); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	result, price, err := u.Usecase.Exec(entities.Ad{
-		AdCondition: AdCondition.AdCondition,
+		AdCondition: conditions.AdCondition,
 		DspID:       c.Param("id"),
 	})
 
@@ -42,6 +41,7 @@ func (u *DspHandler) Dsp(c *gin.Context) {
 		AdCondition: result.AdCondition,
 		Price:       price,
 	}
+	time.Sleep(time.Duration(conditions.Delay) * time.Millisecond)
 	log.Println("DSP: "+c.Param("id")+" Price: ", price)
 	c.JSON(http.StatusOK, DspResponse)
 }
