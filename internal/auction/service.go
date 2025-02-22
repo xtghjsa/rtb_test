@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"strconv"
 	"test_project/internal/api/request"
 	"test_project/internal/api/response"
 	"test_project/internal/encoding"
@@ -12,10 +13,14 @@ import (
 	"time"
 )
 
-func SSPAuctionService(condition request.DspRequest, endpoints []string) response.SspResponse {
+type AuctionService struct {
+	Cfg *utils.AuctionConfig
+}
 
-	resultsChannel := make(chan response.DspResponse, len(endpoints))
-	for _, url := range endpoints {
+func (c *AuctionService) SSPAuctionService(condition request.DspRequest) response.SspResponse {
+
+	resultsChannel := make(chan response.DspResponse, len(c.Cfg.DSPUrls))
+	for _, url := range c.Cfg.DSPUrls {
 		localCondition := condition
 		go func(endpoint string, cond request.DspRequest) {
 			cond.Delay = utils.RandomDelay()
@@ -41,11 +46,15 @@ func SSPAuctionService(condition request.DspRequest, endpoints []string) respons
 			resultsChannel <- dspResp
 		}(url, localCondition)
 	}
+	maxResponseTimeInt, err := strconv.Atoi(c.Cfg.MaxResponseTime)
+	if err != nil {
+		return response.SspResponse{}
+	}
+	results := make([]response.DspResponse, len(c.Cfg.DSPUrls))
+	timeLimit := time.After(time.Duration(maxResponseTimeInt) * time.Millisecond)
 
-	results := make([]response.DspResponse, len(endpoints))
-	timeLimit := time.After(300 * time.Millisecond)
 loop:
-	for i := 0; i < len(endpoints); i++ {
+	for i := 0; i < len(c.Cfg.DSPUrls); i++ {
 		select {
 		case result := <-resultsChannel:
 			results = append(results, result)
@@ -65,8 +74,8 @@ loop:
 		DspID:                 mostExpensive.DspID,
 		Price:                 mostExpensive.Price,
 		AdName:                mostExpensive.AdName,
-		TrackingClickURL:      "http://0.0.0.0:6060/tracking" + "?event=click" + "?value=" + encoded,
-		TrackingImpressionURL: "http://0.0.0.0:6060/tracking" + "?event=impression" + "?value=" + encoded,
+		TrackingClickURL:      c.Cfg.TrackingURL + "?event=click" + "?value=" + encoded,
+		TrackingImpressionURL: c.Cfg.TrackingURL + "?event=impression" + "?value=" + encoded,
 	}
 	return response
 }

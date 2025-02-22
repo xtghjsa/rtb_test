@@ -1,0 +1,9 @@
+{
+    "dsp_urls":[
+    "http://dsp:7070/dsp/1",
+    "http://dsp:7070/dsp/2",
+    "http://dsp:7070/dsp/3"
+    ],
+    "max_response_time": "300",
+    "tracking_url":"http://0.0.0.0:6060/tracking"
+}

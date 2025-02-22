@@ -42,6 +42,8 @@ services:
     networks:
       - kafka-network
       - rtb-network
+    volumes:
+      - ./config/ssp_config.json:/app/config/ssp_config.json
 
       
   zookeeper:

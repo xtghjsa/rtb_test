@@ -8,15 +8,19 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type AuctionHandler struct {
+	Usecase *usecase.AuctionUsecase
+}
+
 // Gets AdCondition, sends it to the DSP, gets the response from the DSP, sends it to the user
-func Ssp(c *gin.Context) {
+func (u *AuctionHandler) Auction(c *gin.Context) {
 	var condition request.SspRequest
 
 	if err := c.ShouldBindJSON(&condition); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	resp := usecase.AuctionExec(condition)
+	resp := u.Usecase.AuctionExec(condition)
 
 	c.JSON(http.StatusOK, resp)
 }

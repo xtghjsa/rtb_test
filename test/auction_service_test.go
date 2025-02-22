@@ -7,6 +7,7 @@ import (
 	"test_project/internal/api/request"
 	"test_project/internal/api/response"
 	"test_project/internal/auction"
+	"test_project/internal/utils"
 	"testing"
 	"time"
 )
@@ -35,13 +36,18 @@ func TestSSPAuctionService(t *testing.T) {
 	ts3 := testServer("dsp3", "test_ad", 250, 111*time.Millisecond)
 	defer ts3.Close()
 
-	endpoints := []string{ts1.URL, ts2.URL, ts3.URL}
+	config := utils.AuctionConfig{
+		DSPUrls:         []string{ts1.URL, ts2.URL, ts3.URL},
+		MaxResponseTime: "300",
+		TrackingURL:     "http://localhost:8080/tracking",
+	}
+	auctionUsecase := &auction.AuctionService{Cfg: &config}
 
 	testRequest := request.DspRequest{
 		AdCondition: "condition",
 	}
 
-	result := auction.SSPAuctionService(testRequest, endpoints)
+	result := auctionUsecase.SSPAuctionService(testRequest)
 
 	if result.DspID != "dsp3" {
 		t.Errorf("expected dsp3 but got %s", result.DspID)

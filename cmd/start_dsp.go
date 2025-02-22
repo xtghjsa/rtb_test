@@ -13,19 +13,22 @@ import (
 )
 
 func startDSPExec(cmd *cobra.Command, args []string) {
-	fmt.Println("Starting DSP server")
+	//Load env variables
 	envList, err := utils.LoadEnv()
 	if err != nil {
 		log.Fatalf("error loading env variables: %v\n", err)
 	}
+	//Init database
 	db, err := pkg.InitDatabase(envList.PostgresUser, envList.PostgresPass, envList.PostgresDBName, envList.PostgresHost, envList.PostgresPort)
 	if err != nil {
 		log.Fatalf("Error initializing database: %v\n", err)
 	}
+	//Adds test ads into the database
 	err = repository.AddTestAds(db)
 	if err != nil {
 		log.Fatalf("Error adding test ads into dsp database: %v", err)
 	}
+	//Starts DSP server
 	err = api.StartDSP(envList.DSPHost, envList.DSPPort, db)
 	if err != nil {
 		fmt.Printf("Error starting DSP server: %v", err)
