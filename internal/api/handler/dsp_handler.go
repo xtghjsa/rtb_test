@@ -25,7 +25,7 @@ func (u *DspHandler) Dsp(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	result, price, err := u.Usecase.Exec(entities.Ad{
+	result, price, bidID, err := u.Usecase.Exec(entities.Ad{
 		AdCondition: conditions.AdCondition,
 		DspID:       c.Param("id"),
 	})
@@ -35,13 +35,14 @@ func (u *DspHandler) Dsp(c *gin.Context) {
 		return
 	}
 	var DspResponse = response.DspResponse{
-		ID:          result.ID,
-		DspID:       result.DspID,
-		AdName:      result.AdName,
-		AdCondition: result.AdCondition,
-		Price:       price,
+		ID:     result.ID,
+		DspID:  result.DspID,
+		BidID:  bidID,
+		AdName: result.AdName,
+		Price:  price,
 	}
 	time.Sleep(time.Duration(conditions.Delay) * time.Millisecond)
 	log.Println("DSP: "+c.Param("id")+" Price: ", price)
+
 	c.JSON(http.StatusOK, DspResponse)
 }

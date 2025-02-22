@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-func testServer(dspID, adName string, price int, delay time.Duration) *httptest.Server {
+func testServer(dspID, adName string, price int64, delay time.Duration) *httptest.Server {
 	handler := func(w http.ResponseWriter, r *http.Request) {
 		time.Sleep(delay)
 		resp := response.DspResponse{

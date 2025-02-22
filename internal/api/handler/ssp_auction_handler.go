@@ -16,7 +16,7 @@ func Ssp(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	resp := usecase.SspExec(condition)
+	resp := usecase.AuctionExec(condition)
 
 	c.JSON(http.StatusOK, resp)
 }

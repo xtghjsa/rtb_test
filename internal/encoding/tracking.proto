@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package encoding;
+
+option go_package = "test_project/internal/encoding";
+
+message Tracking {
+  string dsp_id = 1;
+  string ad_name = 2;
+  string bid_id = 3;
+  int64 price = 4;
+}

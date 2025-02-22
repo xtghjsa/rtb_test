@@ -18,7 +18,7 @@ func startDSPExec(cmd *cobra.Command, args []string) {
 	if err != nil {
 		log.Fatalf("error loading env variables: %v\n", err)
 	}
-	db, err := pkg.InitDspDatabase(envList.PostgresUser, envList.PostgresPass, envList.PostgresDBName, envList.PostgresHost, envList.PostgresPort)
+	db, err := pkg.InitDatabase(envList.PostgresUser, envList.PostgresPass, envList.PostgresDBName, envList.PostgresHost, envList.PostgresPort)
 	if err != nil {
 		log.Fatalf("Error initializing database: %v\n", err)
 	}

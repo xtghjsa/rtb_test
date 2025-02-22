@@ -9,6 +9,8 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - rtb-network
 
   dsp:
     build:
@@ -24,6 +26,8 @@ services:
       - POSTGRES_DBNAME=testdb
       - POSTGRES_HOST=db
       - POSTGRES_PORT=5432
+    networks:
+      - rtb-network
 
   ssp:
     build:
@@ -31,6 +35,45 @@ services:
       dockerfile: ./deploy/ssp/Dockerfile
     ports:
       - "6060:6060"
+    depends_on:
+      - db
+      - kafka
+      - dsp
+    networks:
+      - kafka-network
+      - rtb-network
+
+      
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - kafka-network
+      - rtb-network
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      - zookeeper
+    ports:
+      - "5050:5050"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:5050
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+    networks:
+      - kafka-network
+      - rtb-network
+
+networks:
+  kafka-network:
+    driver: bridge
+  rtb-network:
+    driver: bridge
       
 volumes:
   postgres_data:

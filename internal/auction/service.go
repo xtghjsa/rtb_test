@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"test_project/internal/api/request"
 	"test_project/internal/api/response"
+	"test_project/internal/encoding"
 	"test_project/internal/utils"
 	"time"
 )
@@ -59,9 +60,13 @@ loop:
 			mostExpensive = results[i]
 		}
 	}
+	encoded, _ := encoding.Encode(&mostExpensive)
 	response := response.SspResponse{
-		DspID:  mostExpensive.DspID,
-		AdName: mostExpensive.AdName,
+		DspID:                 mostExpensive.DspID,
+		Price:                 mostExpensive.Price,
+		AdName:                mostExpensive.AdName,
+		TrackingClickURL:      "http://0.0.0.0:6060/tracking" + "?event=click" + "?value=" + encoded,
+		TrackingImpressionURL: "http://0.0.0.0:6060/tracking" + "?event=impression" + "?value=" + encoded,
 	}
 	return response
 }

@@ -8,7 +8,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
-func InitDspDatabase(user, pass, dbname, host, port string) (*sql.DB, error) {
+func InitDatabase(user, pass, dbname, host, port string) (*sql.DB, error) {
 	//Connect to PostgreSQL Server
 	pgsServerConn := fmt.Sprintf("user=%s password=%s host=%s port=%s sslmode=disable", user, pass, host, port)
 	pgsServer, err := sql.Open("postgres", pgsServerConn)
@@ -40,7 +40,7 @@ func InitDspDatabase(user, pass, dbname, host, port string) (*sql.DB, error) {
 	if err != nil {
 		return nil, errors.New("error connecting to database")
 	}
-	//Create table ads if not exists
+	//Create table ads if not exists (DSP)
 	createAdsTable := `CREATE TABLE IF NOT EXISTS ads (
 		id SERIAL PRIMARY KEY,
 		dsp_id TEXT,
@@ -50,6 +50,17 @@ func InitDspDatabase(user, pass, dbname, host, port string) (*sql.DB, error) {
 	_, err = db.Exec(createAdsTable)
 	if err != nil {
 		return nil, errors.New("error creating ads table")
+	}
+	//Create table deals if not exists (SSP)
+	createDealsTable := `CREATE TABLE IF NOT EXISTS tracked (
+	id SERIAL PRIMARY KEY,
+	bid_Id TEXT,
+	price TEXT,
+	event_type TEXT
+	);`
+	_, err = db.Exec(createDealsTable)
+	if err != nil {
+		return nil, errors.New("error creating tracked table")
 	}
 	return db, nil
 }
