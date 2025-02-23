@@ -44,6 +44,14 @@ services:
       - rtb-network
     volumes:
       - ./config/ssp_config.json:/app/config/ssp_config.json
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "1010:1010"
+    volumes:
+      - ./config/prometheus.yml:/app/config/prometheus.yml
+    networks:
+      - rtb-network
 
       
   zookeeper:
